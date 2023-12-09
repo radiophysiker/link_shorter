@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
+	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/storage"
 	"strings"
 	"testing"
@@ -33,8 +34,12 @@ func TestUrlHandlerCreateShortUrlSimple(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			app := fiber.New()
 			handler := &URLHandler{
-				Storage: &storage.URLStorage{
+				storage: &storage.URLStorage{
 					Urls: make(map[string]string),
+				},
+				config: &config.Config{
+					BaseURL:    "localhost:8080",
+					ServerPort: "localhost:8080",
 				},
 			}
 			app.Post("/", handler.CreateShortURL)
@@ -77,8 +82,12 @@ func TestUrlHandlerGetFullUrl(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			app := fiber.New()
 			handler := &URLHandler{
-				Storage: &storage.URLStorage{
+				storage: &storage.URLStorage{
 					Urls: map[string]string{"test": "test"},
+				},
+				config: &config.Config{
+					BaseURL:    "localhost:8080",
+					ServerPort: "localhost:8080",
 				},
 			}
 			app.Get("/:id", handler.GetFullURL)
