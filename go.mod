@@ -3,6 +3,7 @@ module radiophysiker/link_shorter
 go 1.21.4
 
 require (
+	github.com/caarlos0/env/v10 v10.0.0
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4

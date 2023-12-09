@@ -9,10 +9,10 @@ import (
 
 func main() {
 	cfg := config.New()
-	getter := config.Getter(cfg)
+	cfgGetter := config.Getter(cfg)
 	urlHandler := handlers.New(cfg)
 	webApp := fiber.New()
 	webApp.Post("/", urlHandler.CreateShortURL)
 	webApp.Get("/:id", urlHandler.GetFullURL)
-	logrus.Fatal(webApp.Listen(getter.GetBaseURL()))
+	logrus.Fatal(webApp.Listen(cfgGetter.GetServerPort()))
 }

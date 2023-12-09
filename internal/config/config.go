@@ -2,25 +2,29 @@ package config
 
 import (
 	"flag"
-	"fmt"
+	"github.com/caarlos0/env/v10"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 type Config struct {
-	BaseURL    string
-	ServerPort string
+	BaseURL    string `env:"BASE_URL" envDefault:"http://localhost:8080"`
+	ServerPort string `env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
 }
 
 var cfg Config
 
 func New() *Config {
-	flag.StringVar(&cfg.BaseURL, "a", "localhost:8080", "address and port to run server")
-	flag.StringVar(&cfg.ServerPort, "b", "localhost:8080", "address and port for result url")
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "address and port to run server")
+	flag.StringVar(&cfg.ServerPort, "a", cfg.ServerPort, "address and port for result url")
 	flag.Parse()
-	fmt.Println(cfg.BaseURL, cfg.ServerPort)
 	return &cfg
 }
 
-func (c *Config) GetPort() string {
+func (c *Config) GetServerPort() string {
 	return c.ServerPort
 }
 
@@ -29,6 +33,6 @@ func (c *Config) GetBaseURL() string {
 }
 
 type Getter interface {
-	GetPort() string
+	GetServerPort() string
 	GetBaseURL() string
 }
