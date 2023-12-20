@@ -1,15 +1,17 @@
 package handlers
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"net/http/httptest"
+
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/storage"
-	"strings"
-	"testing"
 )
 
 func TestUrlHandlerCreateShortUrlSimple(t *testing.T) {

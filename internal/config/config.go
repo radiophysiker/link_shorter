@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+
 	"github.com/caarlos0/env/v10"
 	"github.com/gofiber/fiber/v2/log"
 )

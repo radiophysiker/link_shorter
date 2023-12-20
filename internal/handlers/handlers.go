@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"net/http"
+
+	"github.com/gofiber/fiber/v2"
+
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/storage"
 )
@@ -26,10 +28,7 @@ func (h *URLHandler) CreateShortURL(c *fiber.Ctx) error {
 	if url == "" {
 		return c.Status(http.StatusBadRequest).SendString("url is empty")
 	}
-	shortURL, err := h.storage.CreateShortURL(url)
-	if err != nil {
-		return c.SendStatus(http.StatusBadRequest)
-	}
+	shortURL := h.storage.CreateShortURL(url)
 	return c.Status(http.StatusCreated).SendString(h.config.GetBaseURL() + "/" + shortURL)
 }
 

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
+
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/handlers"
 )

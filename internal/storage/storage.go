@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+
 	"radiophysiker/link_shorter/internal/utils"
 )
 
@@ -14,10 +15,10 @@ type URLStorage struct {
 	Urls map[ShortURL]FullURL
 }
 
-func (s URLStorage) CreateShortURL(fullURL FullURL) (ShortURL, error) {
+func (s URLStorage) CreateShortURL(fullURL FullURL) ShortURL {
 	shortURL := utils.GetShortRandomString()
 	s.Urls[shortURL] = fullURL
-	return shortURL, nil
+	return shortURL
 }
 
 func (s URLStorage) GetFullURL(shortURL ShortURL) (FullURL, error) {
@@ -29,6 +30,6 @@ func (s URLStorage) GetFullURL(shortURL ShortURL) (FullURL, error) {
 }
 
 type URLCreatorGetter interface {
-	CreateShortURL(fullURL FullURL) (ShortURL, error)
+	CreateShortURL(fullURL FullURL) ShortURL
 	GetFullURL(shortURL ShortURL) (FullURL, error)
 }
