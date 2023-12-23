@@ -105,3 +105,49 @@ func TestUrlHandlerGetFullUrl(t *testing.T) {
 		})
 	}
 }
+
+func TestUrlHandlerCreateShortAPIURL(t *testing.T) {
+	tests := []struct {
+		name     string
+		body     string
+		wantCode int
+	}{
+		{
+			name:     "simple",
+			body:     `{"url": "https://yandex.ru"}`,
+			wantCode: http.StatusCreated,
+		},
+		{
+			name:     "empty",
+			body:     "",
+			wantCode: http.StatusBadRequest,
+		},
+	}
+
+	app := fiber.New()
+	handler := &URLHandler{
+		storage: &storage.URLStorage{
+			Urls: make(map[string]string),
+		},
+		config: &config.Config{
+			BaseURL:    "localhost:8080",
+			ServerPort: "localhost:8080",
+		},
+	}
+	app.Post("/", handler.CreateShortAPIURL)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+
+			req := httptest.NewRequest(
+				http.MethodPost,
+				"/",
+				strings.NewReader(tc.body),
+			)
+			resp, err := app.Test(req)
+			require.NoError(t, err)
+			defer resp.Body.Close()
+			assert.Equal(t, tc.wantCode, resp.StatusCode)
+			assert.NotEmpty(t, resp.Body)
+		})
+	}
+}

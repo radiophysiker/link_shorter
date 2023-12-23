@@ -23,5 +23,7 @@ func main() {
 	webApp.Use(adaptor.HTTPMiddleware(logger.CustomMiddlewareLogger))
 	webApp.Post("/", urlHandler.CreateShortURL)
 	webApp.Get("/:id", urlHandler.GetFullURL)
+	webApp.Post("/api/shorten", urlHandler.CreateShortAPIURL)
+
 	logger.Fatalf("cannot initialize app!", webApp.Listen(cfgGetter.GetServerPort()))
 }
