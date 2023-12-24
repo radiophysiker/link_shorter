@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi"
 
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/storage"
@@ -32,31 +33,58 @@ func New(cfg *config.Config) *URLHandler {
 	}
 }
 
-func (h *URLHandler) CreateShortURL(c *fiber.Ctx) error {
-	var url = string(c.BodyRaw())
+func (h *URLHandler) CreateShortURL(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	url := string(body)
 	if url == "" {
-		return c.Status(http.StatusBadRequest).SendString("url is empty")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("url is empty"))
+		return
 	}
 	shortURL := h.storage.CreateShortURL(url)
-	return c.Status(http.StatusCreated).SendString(h.config.GetBaseURL() + "/" + shortURL)
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(h.config.GetBaseURL() + "/" + shortURL))
 }
 
-func (h *URLHandler) CreateShortAPIURL(c *fiber.Ctx) error {
+func (h *URLHandler) CreateShortAPIURL(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	var request CreateShortURLEntryRequest
-	json.Unmarshal(c.BodyRaw(), &request)
+	json.Unmarshal(body, &request)
 	var url = request.FullURL
 	if url == "" {
-		return c.Status(http.StatusBadRequest).SendString("url is empty")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("url is empty"))
+		return
 	}
 	shortURL := h.storage.CreateShortURL(url)
-	return c.Status(http.StatusCreated).JSON(CreateShortURLEntryResponse{ShortURL: h.config.GetBaseURL() + "/" + shortURL})
+	resp := CreateShortURLEntryResponse{ShortURL: h.config.GetBaseURL() + "/" + shortURL}
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(jsonResp)
 }
 
-func (h *URLHandler) GetFullURL(c *fiber.Ctx) error {
-	shortURL := c.Params("id")
+func (h *URLHandler) GetFullURL(w http.ResponseWriter, r *http.Request) {
+	shortURL := chi.URLParam(r, "id")
 	fullURL, err := h.storage.GetFullURL(shortURL)
 	if err != nil {
-		return c.Status(http.StatusNotFound).SendString("url is not found for " + shortURL)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("url is not found for " + shortURL))
+		return
 	}
-	return c.Redirect(fullURL, http.StatusTemporaryRedirect)
+	w.Header().Set("Location", fullURL)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }

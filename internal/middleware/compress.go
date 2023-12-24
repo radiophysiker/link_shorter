@@ -32,7 +32,6 @@ func CustomCompression(next http.Handler) http.Handler {
 			}
 		}
 		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") &&
-			strings.Contains(r.Header.Get("Content-Encoding"), "gzip") &&
 			isContentTypeSupported {
 			logger.Infof("compressing response with gzip")
 			gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)

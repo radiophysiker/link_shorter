@@ -6,9 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/storage"
@@ -34,7 +33,7 @@ func TestUrlHandlerCreateShortUrlSimple(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			app := fiber.New()
+			router := chi.NewRouter()
 			handler := &URLHandler{
 				storage: &storage.URLStorage{
 					Urls: make(map[string]string),
@@ -44,17 +43,17 @@ func TestUrlHandlerCreateShortUrlSimple(t *testing.T) {
 					ServerPort: "localhost:8080",
 				},
 			}
-			app.Post("/", handler.CreateShortURL)
+			router.Post("/", handler.CreateShortURL)
 			req := httptest.NewRequest(
 				http.MethodPost,
 				"/",
 				strings.NewReader(tc.body),
 			)
-			resp, err := app.Test(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
-			assert.Equal(t, tc.wantCode, resp.StatusCode)
-			assert.NotEmpty(t, resp.Body)
+			rec := httptest.NewRecorder()
+			router.ServeHTTP(rec, req)
+
+			assert.Equal(t, tc.wantCode, rec.Code)
+			assert.NotEmpty(t, rec.Body)
 		})
 	}
 }
@@ -82,7 +81,6 @@ func TestUrlHandlerGetFullUrl(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			app := fiber.New()
 			handler := &URLHandler{
 				storage: &storage.URLStorage{
 					Urls: map[string]string{"test": "test"},
@@ -92,16 +90,18 @@ func TestUrlHandlerGetFullUrl(t *testing.T) {
 					ServerPort: "localhost:8080",
 				},
 			}
-			app.Get("/:id", handler.GetFullURL)
+			router := chi.NewRouter()
+			router.Get("/{id}", handler.GetFullURL)
+
 			req := httptest.NewRequest(
 				http.MethodGet,
 				tc.requestPath,
 				nil,
 			)
-			resp, err := app.Test(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
-			assert.Equal(t, tc.wantCode, resp.StatusCode)
+			rec := httptest.NewRecorder()
+			router.ServeHTTP(rec, req)
+
+			assert.Equal(t, tc.wantCode, rec.Code)
 		})
 	}
 }
@@ -124,7 +124,7 @@ func TestUrlHandlerCreateShortAPIURL(t *testing.T) {
 		},
 	}
 
-	app := fiber.New()
+	router := chi.NewRouter()
 	handler := &URLHandler{
 		storage: &storage.URLStorage{
 			Urls: make(map[string]string),
@@ -134,7 +134,7 @@ func TestUrlHandlerCreateShortAPIURL(t *testing.T) {
 			ServerPort: "localhost:8080",
 		},
 	}
-	app.Post("/", handler.CreateShortAPIURL)
+	router.Post("/", handler.CreateShortAPIURL)
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 
@@ -143,11 +143,11 @@ func TestUrlHandlerCreateShortAPIURL(t *testing.T) {
 				"/",
 				strings.NewReader(tc.body),
 			)
-			resp, err := app.Test(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
-			assert.Equal(t, tc.wantCode, resp.StatusCode)
-			assert.NotEmpty(t, resp.Body)
+			rec := httptest.NewRecorder()
+			router.ServeHTTP(rec, req)
+
+			assert.Equal(t, tc.wantCode, rec.Code)
+			assert.NotEmpty(t, rec.Body)
 		})
 	}
 }
