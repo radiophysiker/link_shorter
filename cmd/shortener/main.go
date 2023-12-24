@@ -9,6 +9,7 @@ import (
 	"radiophysiker/link_shorter/internal/config"
 	"radiophysiker/link_shorter/internal/handlers"
 	"radiophysiker/link_shorter/internal/logger"
+	"radiophysiker/link_shorter/internal/middleware"
 )
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 	}
 
 	webApp.Use(adaptor.HTTPMiddleware(logger.CustomMiddlewareLogger))
+	webApp.Use(adaptor.HTTPMiddleware(middleware.CustomCompression))
 	webApp.Post("/", urlHandler.CreateShortURL)
 	webApp.Get("/:id", urlHandler.GetFullURL)
 	webApp.Post("/api/shorten", urlHandler.CreateShortAPIURL)

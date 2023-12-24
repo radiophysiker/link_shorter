@@ -25,6 +25,14 @@ func Fatalf(format string, args ...any) {
 	logger.Fatalf(format, args...)
 }
 
+func Errorf(format string, args ...any) {
+	logger.Errorf(format, args...)
+}
+
+func Infof(format string, args ...any) {
+	logger.Infof(format, args...)
+}
+
 func CustomMiddlewareLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -33,6 +41,7 @@ func CustomMiddlewareLogger(next http.Handler) http.Handler {
 		logger.Infoln(
 			"URI:", r.RequestURI,
 			"Method:", r.Method,
-			"Duration:", time.Since(start))
+			"Duration:", time.Since(start),
+		)
 	})
 }
