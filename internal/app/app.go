@@ -25,8 +25,8 @@ func Run() {
 	if err != nil {
 		l.Fatal("cannot initialize repository! %s", err)
 	}
-	usecasesURLShortener := usecases.NewURLShortener(*urlFileRepository, cfg)
-	router := v1.NewRouter(usecasesURLShortener, cfg, l)
+	useCasesURLShortener := usecases.NewURLShortener(urlFileRepository, cfg)
+	router := v1.NewRouter(useCasesURLShortener, cfg, l)
 	l.Info("starting server on port " + cfg.GetServerPort())
 	l.Fatal("cannot initialize app!", http.ListenAndServe(cfg.GetServerPort(), router))
 }

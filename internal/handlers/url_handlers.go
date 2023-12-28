@@ -11,10 +11,10 @@ import (
 type URLHandler struct {
 	URLUseCase usecases.URL
 	config     *config.Config
-	log        logger.Interface
+	log        logger.Logger
 }
 
-func NewURLHandler(u usecases.URL, cfg *config.Config, log logger.Interface) *URLHandler {
+func NewURLHandler(u usecases.URL, cfg *config.Config, log logger.Logger) *URLHandler {
 	return &URLHandler{
 		URLUseCase: u,
 		config:     cfg,

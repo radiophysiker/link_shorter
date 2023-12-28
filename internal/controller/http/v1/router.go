@@ -10,7 +10,7 @@ import (
 	"radiophysiker/link_shorter/internal/usecases"
 )
 
-func NewRouter(u usecases.URL, cfg *config.Config, log logger.Interface) *chi.Mux {
+func NewRouter(u usecases.URL, cfg *config.Config, log logger.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(log.CustomMiddlewareLogger)

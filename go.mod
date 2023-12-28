@@ -10,6 +10,8 @@ require (
 
 require github.com/google/uuid v1.5.0
 
+require github.com/stretchr/objx v0.5.0 // indirect
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-chi/chi v1.5.5
