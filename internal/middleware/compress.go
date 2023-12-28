@@ -5,8 +5,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-
-	"radiophysiker/link_shorter/internal/logger"
 )
 
 type gzipWriter struct {
@@ -33,10 +31,8 @@ func CustomCompression(next http.Handler) http.Handler {
 		}
 		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") &&
 			isContentTypeSupported {
-			logger.Infof("compressing response with gzip")
 			gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
 			if err != nil {
-				logger.Errorf("cannot create gzip writer! %s", err)
 				io.WriteString(w, err.Error())
 				return
 			}
@@ -48,10 +44,8 @@ func CustomCompression(next http.Handler) http.Handler {
 		}
 
 		if strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
-			logger.Infof("compressing request with gzip")
 			gz, err := gzip.NewReader(r.Body)
 			if err != nil {
-				logger.Errorf("cannot create gzip reader! %s", err)
 				io.WriteString(w, err.Error())
 				return
 			}

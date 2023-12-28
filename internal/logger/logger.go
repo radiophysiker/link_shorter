@@ -8,40 +8,51 @@ import (
 	"go.uber.org/zap"
 )
 
-var logger *zap.SugaredLogger
+type Logger struct {
+	*zap.SugaredLogger
+}
 
-func Init() error {
-	var err error
+type Interface interface {
+	Fatal(format string, args ...any)
+	Error(format string, args ...any)
+	Info(format string, args ...any)
+	CustomMiddlewareLogger(next http.Handler) http.Handler
+}
+
+func Init() (*Logger, error) {
 	z, err := zap.NewDevelopment()
 	if err != nil {
-		return fmt.Errorf("logger don't Run! %s", err)
+		return nil, fmt.Errorf("logger don't Run! %s", err)
 	}
-	logger = z.Sugar()
+	logger := z.Sugar()
 	defer logger.Sync()
-	return nil
+	return &Logger{logger}, nil
 }
 
-func Fatalf(format string, args ...any) {
-	logger.Fatalf(format, args...)
+func (l *Logger) Fatal(format string, args ...any) {
+	l.Fatalf(format, args...)
 }
 
-func Errorf(format string, args ...any) {
-	logger.Errorf(format, args...)
+func (l *Logger) Error(format string, args ...any) {
+	l.Errorf(format, args...)
 }
 
-func Infof(format string, args ...any) {
-	logger.Infof(format, args...)
+func (l *Logger) Info(format string, args ...any) {
+	l.Infof(format, args...)
 }
 
-func CustomMiddlewareLogger(next http.Handler) http.Handler {
+func (l *Logger) CustomMiddlewareLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)
 
-		logger.Infoln(
+		l.Infof(
 			"URI:", r.RequestURI,
 			"Method:", r.Method,
 			"Duration:", time.Since(start),
 		)
 	})
+}
+
+type Getter interface {
 }

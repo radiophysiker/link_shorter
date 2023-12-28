@@ -2,27 +2,27 @@ package config
 
 import (
 	"flag"
-	"log"
 
 	"github.com/caarlos0/env/v10"
 )
 
 type Config struct {
-	BaseURL    string `env:"BASE_URL" envDefault:"http://localhost:8080"`
-	ServerPort string `env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
+	BaseURL         string `env:"BASE_URL" envDefault:"http://localhost:8080"`
+	ServerPort      string `env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
+	FileStoragePath string `env:"FILE_STORAGE_PATH" envDefault:"/tmp/short-url-db.json"`
 }
 
 var cfg Config
 
-func New() *Config {
+func LoadConfig() (*Config, error) {
 	if err := env.Parse(&cfg); err != nil {
-		log.Fatal(err)
-		return nil
+		return nil, err
 	}
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "address and port to run server")
 	flag.StringVar(&cfg.ServerPort, "a", cfg.ServerPort, "address and port for result url")
+	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "the full name of the file where the data is saved")
 	flag.Parse()
-	return &cfg
+	return &cfg, nil
 }
 
 func (c *Config) GetServerPort() string {
@@ -33,7 +33,6 @@ func (c *Config) GetBaseURL() string {
 	return c.BaseURL
 }
 
-type Getter interface {
-	GetServerPort() string
-	GetBaseURL() string
+func (c *Config) GetFileStoragePath() string {
+	return c.FileStoragePath
 }
