@@ -15,7 +15,7 @@ func TestURLUseCase_CreateShortURL(t *testing.T) {
 		fullURL string
 	}
 
-	mocksRepoURL := mocks.NewURLFileRepository(t)
+	mocksRepoURL := mocks.NewURLRepository(t)
 	mocksRepoURL.
 		On("Save", mock.AnythingOfType("entity.URL")).Return(nil)
 	tests := []struct {

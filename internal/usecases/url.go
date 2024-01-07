@@ -8,11 +8,11 @@ import (
 )
 
 type URLUseCase struct {
-	urlRepository repository.URLFileRepository
+	urlRepository repository.URLRepository
 	config        *config.Config
 }
 
-func NewURLShortener(re repository.URLFileRepository, config *config.Config) *URLUseCase {
+func NewURLShortener(re repository.URLRepository, config *config.Config) *URLUseCase {
 	return &URLUseCase{
 		urlRepository: re,
 		config:        config,
