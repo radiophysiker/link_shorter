@@ -26,4 +26,5 @@ func (h *URLHandler) RegisterRoutes(r chi.Router) {
 	r.Get("/{id}", h.GetFullURL)
 	r.Post("/api/shorten", h.CreateShortURLWithJSON)
 	r.Post("/", h.CreateShortURL)
+	r.Get("/ping", h.Ping)
 }
